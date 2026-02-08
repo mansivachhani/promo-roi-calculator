@@ -2,7 +2,7 @@
 
 A lean Next.js + Tailwind micro-app to estimate the impact of a marketing promotion by modeling uplift, churn effects, and direct bonus cost.
 
-![Promo ROI Calculator UI](/Users/denishvachhani/Projects/LetsBuild/promo-roi-calculator/public/screenshot.png)
+![Promo ROI Calculator UI](./public/screenshot.png)
 
 ## Quick Start
 

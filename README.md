@@ -1,6 +1,6 @@
 # Promo ROI Calculator
 
-A lean Next.js + Tailwind micro-app to estimate the impact of a marketing promotion by modeling uplift, churn effects, and direct bonus cost.
+A lightweight tool for iGaming product and marketing teams to sanity-check promotion economics fast. Plug in baseline revenue, expected uplift, churn impact, and bonus cost to get a clear ROI snapshot, payback period, and sensitivity view before you ship a promo.
 
 ![Promo ROI Calculator UI](./public/screenshot.png)
 

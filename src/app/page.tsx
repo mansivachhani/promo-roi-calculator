@@ -9,6 +9,45 @@ type Inputs = {
   churnPct: string;
 };
 
+type Preset = {
+  label: string;
+  description: string;
+  values: Inputs;
+};
+
+const presets: Preset[] = [
+  {
+    label: "Conservative",
+    description: "Lower uplift, higher cost, mild churn drag.",
+    values: {
+      baselineRevenue: "100000",
+      upliftPct: "4",
+      bonusCost: "20000",
+      churnPct: "-1"
+    }
+  },
+  {
+    label: "Expected",
+    description: "Balanced assumptions for typical performance.",
+    values: {
+      baselineRevenue: "120000",
+      upliftPct: "8",
+      bonusCost: "15000",
+      churnPct: "-2"
+    }
+  },
+  {
+    label: "Aggressive",
+    description: "Higher uplift with efficient bonus spend.",
+    values: {
+      baselineRevenue: "180000",
+      upliftPct: "14",
+      bonusCost: "12000",
+      churnPct: "1"
+    }
+  }
+];
+
 function toNumber(value: string): number {
   if (!value) return 0;
   const parsed = Number(value);
@@ -16,12 +55,7 @@ function toNumber(value: string): number {
 }
 
 export default function Home() {
-  const [inputs, setInputs] = useState<Inputs>({
-    baselineRevenue: "120000",
-    upliftPct: "8",
-    bonusCost: "15000",
-    churnPct: "-2"
-  });
+  const [inputs, setInputs] = useState<Inputs>(presets[1].values);
 
   const results = useMemo(() => {
     const baselineRevenue = toNumber(inputs.baselineRevenue);
@@ -89,6 +123,39 @@ export default function Home() {
         </p>
       </header>
 
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Scenario Presets</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Start with a preset, then fine-tune the assumptions.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => setInputs(preset.values)}
+                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
+          {presets.map((preset) => (
+            <div key={`${preset.label}-desc`} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                {preset.label}
+              </p>
+              <p className="mt-2 text-sm text-slate-600">{preset.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">Inputs</h2>
@@ -97,7 +164,17 @@ export default function Home() {
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <label className="space-y-2 text-sm text-slate-700">
-              Baseline monthly revenue
+              <span className="flex items-center gap-2">
+                Baseline monthly revenue
+                <span className="relative inline-flex">
+                  <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-[11px] font-semibold text-slate-500">
+                    ?
+                    <span className="pointer-events-none absolute left-1/2 top-7 w-56 -translate-x-1/2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                      Your typical monthly revenue before the promo.
+                    </span>
+                  </span>
+                </span>
+              </span>
               <input
                 type="number"
                 inputMode="decimal"
@@ -112,7 +189,17 @@ export default function Home() {
               />
             </label>
             <label className="space-y-2 text-sm text-slate-700">
-              Expected uplift (%)
+              <span className="flex items-center gap-2">
+                Expected uplift (%)
+                <span className="relative inline-flex">
+                  <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-[11px] font-semibold text-slate-500">
+                    ?
+                    <span className="pointer-events-none absolute left-1/2 top-7 w-56 -translate-x-1/2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                      Expected % lift in revenue attributed to the promo.
+                    </span>
+                  </span>
+                </span>
+              </span>
               <input
                 type="number"
                 inputMode="decimal"
@@ -127,7 +214,17 @@ export default function Home() {
               />
             </label>
             <label className="space-y-2 text-sm text-slate-700">
-              Bonus cost (total)
+              <span className="flex items-center gap-2">
+                Bonus cost (total)
+                <span className="relative inline-flex">
+                  <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-[11px] font-semibold text-slate-500">
+                    ?
+                    <span className="pointer-events-none absolute left-1/2 top-7 w-56 -translate-x-1/2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                      Total promo cost (bonus, free bets, rewards).
+                    </span>
+                  </span>
+                </span>
+              </span>
               <input
                 type="number"
                 inputMode="decimal"
@@ -142,7 +239,17 @@ export default function Home() {
               />
             </label>
             <label className="space-y-2 text-sm text-slate-700">
-              Churn impact (%)
+              <span className="flex items-center gap-2">
+                Churn impact (%)
+                <span className="relative inline-flex">
+                  <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-300 text-[11px] font-semibold text-slate-500">
+                    ?
+                    <span className="pointer-events-none absolute left-1/2 top-7 w-64 -translate-x-1/2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                      Promo effect on churn. Negative reduces revenue, positive improves retention.
+                    </span>
+                  </span>
+                </span>
+              </span>
               <input
                 type="number"
                 inputMode="decimal"
@@ -166,8 +273,16 @@ export default function Home() {
           </p>
           <div className="mt-6 grid gap-4">
             <div className="rounded-2xl bg-slate-800/70 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+              <p className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400">
                 Net Impact
+                <span className="relative inline-flex">
+                  <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-600 text-[11px] font-semibold text-slate-300">
+                    ?
+                    <span className="pointer-events-none absolute left-1/2 top-7 w-56 -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                      Uplift revenue + churn impact - bonus cost.
+                    </span>
+                  </span>
+                </span>
               </p>
               <p className="mt-2 text-2xl font-semibold">
                 ${results.netImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -175,16 +290,32 @@ export default function Home() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl bg-slate-800/70 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400">
                   ROI
+                  <span className="relative inline-flex">
+                    <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-600 text-[11px] font-semibold text-slate-300">
+                      ?
+                      <span className="pointer-events-none absolute left-1/2 top-7 w-48 -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                        Net impact divided by bonus cost.
+                      </span>
+                    </span>
+                  </span>
                 </p>
                 <p className="mt-2 text-xl font-semibold">
                   {results.bonusCost > 0 ? results.roi.toFixed(1) : "0.0"}%
                 </p>
               </div>
               <div className="rounded-2xl bg-slate-800/70 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                <p className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400">
                   Payback (months)
+                  <span className="relative inline-flex">
+                    <span className="group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-600 text-[11px] font-semibold text-slate-300">
+                      ?
+                      <span className="pointer-events-none absolute left-1/2 top-7 w-64 -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+                        Months of uplift needed to cover the bonus cost.
+                      </span>
+                    </span>
+                  </span>
                 </p>
                 <p className="mt-2 text-xl font-semibold">
                   {results.upliftRevenue + results.churnImpact > 0
@@ -273,16 +404,6 @@ export default function Home() {
             <li>Uplift is attributable to the promo alone.</li>
             <li>Churn impact can be negative or positive.</li>
             <li>Bonus cost is fully accounted for in the month.</li>
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-slate-200 p-5">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Next Ideas
-          </h3>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-600">
-            <li>Add scenario presets (conservative, expected, aggressive).</li>
-            <li>Compare multiple promos side by side.</li>
-            <li>Export summary to CSV for sharing.</li>
           </ul>
         </div>
       </section>

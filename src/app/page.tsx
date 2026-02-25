@@ -123,6 +123,60 @@ export default function Home() {
         </p>
       </header>
 
+      <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-emerald-50 p-6 shadow-sm sm:p-8">
+        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-cyan-200/40 blur-2xl" />
+        <div className="absolute -bottom-10 -left-8 h-36 w-36 rounded-full bg-emerald-200/50 blur-2xl" />
+        <div className="relative grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Visual Summary
+            </p>
+            <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Promotion performance at a glance
+            </h2>
+            <p className="max-w-xl text-sm text-slate-600">
+              Use this banner as a quick readout before digging into detailed
+              assumptions. Numbers update instantly from your current inputs.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/80 bg-white/80 p-3 backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Net Impact
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">
+                  ${results.netImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/80 bg-white/80 p-3 backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  ROI
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">
+                  {results.roi.toFixed(1)}%
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/80 bg-white/80 p-3 backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Payback
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">
+                  {results.upliftRevenue + results.churnImpact > 0
+                    ? `${results.payback.toFixed(2)} mo`
+                    : "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="relative">
+            <img
+              src="/promo-banner.svg"
+              alt="Promotional ROI dashboard graphic"
+              className="w-full rounded-2xl border border-slate-200/70 shadow-md"
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>

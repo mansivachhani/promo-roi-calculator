@@ -1,6 +1,6 @@
 # Promo ROI Calculator
 
-A lightweight tool for iGaming product and marketing teams to sanity-check promotion economics fast. Plug in baseline revenue, expected uplift, churn impact, and bonus cost to get a clear ROI snapshot, payback period, and sensitivity view before you ship a promo.
+A lightweight tool for iGaming product and marketing teams to sanity-check promotion economics fast. Plug in baseline revenue, expected uplift, churn impact, and bonus cost to get a clear ROI snapshot, payback period, sensitivity view, and required uplift targets before you ship a promo.
 
 Live demo: [promo-roi-calculator.vercel.app](https://promo-roi-calculator.vercel.app/)
 
@@ -14,6 +14,31 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+## Usage Guide
+
+1. Choose a preset
+- Start with `Conservative`, `Expected`, or `Aggressive` to load a realistic baseline.
+
+2. Adjust key assumptions
+- `Baseline monthly revenue`: stable monthly run-rate before promo.
+- `Expected uplift (%)`: incremental revenue lift from promo.
+- `Bonus cost (total)`: total promo spend.
+- `Churn impact (%)`: negative means churn worsens, positive means retention improves.
+
+3. Read the ROI Snapshot
+- `Net Impact`: monthly outcome after uplift, churn effect, and bonus cost.
+- `ROI`: net impact as a percentage of bonus cost.
+- `Payback`: months required to recover bonus cost.
+
+4. Use ROI Sensitivity
+- Shows how ROI changes when uplift assumptions move by ±6%.
+- Useful for best-case/worst-case planning before launch.
+
+5. Use Planning Targets (new)
+- Set `Target ROI (%)` (for example `25`).
+- Check `Break-even uplift` to know the minimum uplift needed for ROI = 0%.
+- Check `Uplift for target ROI` to know the uplift required to hit your chosen ROI goal.
 
 ## How The Calculation Works
 
@@ -29,8 +54,10 @@ Formulas:
 - Net impact = uplift revenue + churn impact - bonus cost
 - ROI % = (net impact / bonus cost) * 100
 - Payback months = bonus cost / (uplift revenue + churn impact)
+- Break-even uplift % = (bonus cost * 100 / baseline revenue) - churn impact %
+- Target uplift % = (bonus cost * (1 + target ROI / 100) * 100 / baseline revenue) - churn impact %
 
-## Example 1 (Matches the defaults)
+## Example 1 (Matches defaults)
 
 Inputs:
 - Baseline revenue = 120,000
@@ -43,28 +70,15 @@ Calculation:
 - Churn impact = 120,000 * -0.02 = -2,400
 - Net impact = 9,600 - 2,400 - 15,000 = -7,800
 - ROI = (-7,800 / 15,000) * 100 = -52.0%
-- Payback = 15,000 / (9,600 - 2,400) = 15,000 / 7,200 = 2.08 months
+- Payback = 15,000 / (9,600 - 2,400) = 2.08 months
+
+Target planning with target ROI = 25%:
+- Break-even uplift = (15,000 * 100 / 120,000) - (-2) = 14.50%
+- Uplift for 25% ROI = (15,000 * 1.25 * 100 / 120,000) - (-2) = 17.63%
 
 Interpretation:
-- The promo loses money in month one, but payback is a bit over 2 months if uplift holds.
-
-## Example 2 (Positive ROI)
-
-Inputs:
-- Baseline revenue = 200,000
-- Uplift = 12%
-- Bonus cost = 10,000
-- Churn impact = +1%
-
-Calculation:
-- Uplift revenue = 200,000 * 0.12 = 24,000
-- Churn impact = 200,000 * 0.01 = 2,000
-- Net impact = 24,000 + 2,000 - 10,000 = 16,000
-- ROI = (16,000 / 10,000) * 100 = 160%
-- Payback = 10,000 / 26,000 = 0.38 months
-
-Interpretation:
-- Strongly positive ROI with rapid payback.
+- At current 8% uplift, the promo is below break-even.
+- You need about 14.5% uplift to break even and 17.6% uplift for 25% ROI.
 
 ## Deploy (Vercel)
 
@@ -74,6 +88,7 @@ npx vercel
 
 ## Suggested Add-ons
 
-- Charts: Recharts or Chart.js
-- Data: local JSON or Supabase free tier
+- CSV export for board/stakeholder sharing
+- Saved scenarios and comparison table
+- API-backed historical promo benchmarks
 - CI: GitHub Actions (lint + build)

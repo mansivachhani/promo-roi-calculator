@@ -56,6 +56,7 @@ function toNumber(value: string): number {
 
 export default function Home() {
   const [inputs, setInputs] = useState<Inputs>(presets[1].values);
+  const [targetRoi, setTargetRoi] = useState<string>("25");
 
   const results = useMemo(() => {
     const baselineRevenue = toNumber(inputs.baselineRevenue);
@@ -81,6 +82,29 @@ export default function Home() {
       payback
     };
   }, [inputs]);
+
+  const upliftTargets = useMemo(() => {
+    const baselineRevenue = toNumber(inputs.baselineRevenue);
+    const bonusCost = toNumber(inputs.bonusCost);
+    const churnPct = toNumber(inputs.churnPct);
+    const targetRoiPct = toNumber(targetRoi);
+
+    if (baselineRevenue <= 0) {
+      return {
+        breakEvenUplift: null as number | null,
+        targetUplift: null as number | null
+      };
+    }
+
+    const breakEvenUplift = (bonusCost * 100) / baselineRevenue - churnPct;
+    const targetUplift =
+      (bonusCost * (1 + targetRoiPct / 100) * 100) / baselineRevenue - churnPct;
+
+    return {
+      breakEvenUplift,
+      targetUplift
+    };
+  }, [inputs, targetRoi]);
 
   const sensitivity = useMemo(() => {
     const baselineRevenue = toNumber(inputs.baselineRevenue);
@@ -448,7 +472,50 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2">
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Planning Targets
+          </h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Estimate the uplift required to break even or to hit a target ROI.
+          </p>
+          <div className="mt-4 space-y-4">
+            <label className="block space-y-2 text-sm text-slate-700">
+              Target ROI (%)
+              <input
+                type="number"
+                inputMode="decimal"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none"
+                value={targetRoi}
+                onChange={(event) => setTargetRoi(event.target.value)}
+              />
+            </label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Break-even uplift
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">
+                  {upliftTargets.breakEvenUplift === null
+                    ? "N/A"
+                    : `${upliftTargets.breakEvenUplift.toFixed(2)}%`}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  Uplift for {toNumber(targetRoi).toFixed(0)}% ROI
+                </p>
+                <p className="mt-1 text-lg font-semibold text-slate-900">
+                  {upliftTargets.targetUplift === null
+                    ? "N/A"
+                    : `${upliftTargets.targetUplift.toFixed(2)}%`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="rounded-2xl border border-slate-200 p-5">
           <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
             Assumptions

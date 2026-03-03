@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Inputs = {
   baselineRevenue: string;
@@ -57,6 +57,50 @@ function toNumber(value: string): number {
 export default function Home() {
   const [inputs, setInputs] = useState<Inputs>(presets[1].values);
   const [targetRoi, setTargetRoi] = useState<string>("25");
+  const [shareCopied, setShareCopied] = useState<boolean>(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const br = params.get("br");
+    const up = params.get("up");
+    const bc = params.get("bc");
+    const ch = params.get("ch");
+    const troi = params.get("troi");
+
+    if (br || up || bc || ch) {
+      setInputs((prev) => ({
+        baselineRevenue: br ?? prev.baselineRevenue,
+        upliftPct: up ?? prev.upliftPct,
+        bonusCost: bc ?? prev.bonusCost,
+        churnPct: ch ?? prev.churnPct
+      }));
+    }
+
+    if (troi) {
+      setTargetRoi(troi);
+    }
+  }, []);
+
+  const copyShareLink = async () => {
+    const params = new URLSearchParams({
+      br: inputs.baselineRevenue,
+      up: inputs.upliftPct,
+      bc: inputs.bonusCost,
+      ch: inputs.churnPct,
+      troi: targetRoi
+    });
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      window.setTimeout(() => setShareCopied(false), 1800);
+    } catch {
+      window.prompt("Copy this share URL", shareUrl);
+    }
+  };
 
   const results = useMemo(() => {
     const baselineRevenue = toNumber(inputs.baselineRevenue);
@@ -209,7 +253,7 @@ export default function Home() {
               Start with a preset, then fine-tune the assumptions.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {presets.map((preset) => (
               <button
                 key={preset.label}
@@ -220,8 +264,20 @@ export default function Home() {
                 {preset.label}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={copyShareLink}
+              className="rounded-full border border-cyan-300 bg-cyan-50 px-4 py-2 text-sm font-medium text-cyan-900 transition hover:border-cyan-400 hover:bg-cyan-100"
+            >
+              Copy Share Link
+            </button>
           </div>
         </div>
+        {shareCopied && (
+          <p className="mt-3 text-sm font-medium text-emerald-700">
+            Share link copied.
+          </p>
+        )}
         <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
           {presets.map((preset) => (
             <div key={`${preset.label}-desc`} className="rounded-xl border border-slate-100 bg-slate-50 p-3">

@@ -35,10 +35,15 @@ Open http://localhost:3000
 - Shows how ROI changes when uplift assumptions move by ±6%.
 - Useful for best-case/worst-case planning before launch.
 
-5. Use Planning Targets (new)
+5. Use Planning Targets
 - Set `Target ROI (%)` (for example `25`).
 - Check `Break-even uplift` to know the minimum uplift needed for ROI = 0%.
 - Check `Uplift for target ROI` to know the uplift required to hit your chosen ROI goal.
+
+6. Share a scenario (new)
+- Click `Copy Share Link`.
+- Send the link to a teammate.
+- When they open it, the app loads your exact inputs and target ROI from URL parameters.
 
 ## How The Calculation Works
 

@@ -40,10 +40,14 @@ Open http://localhost:3000
 - Check `Break-even uplift` to know the minimum uplift needed for ROI = 0%.
 - Check `Uplift for target ROI` to know the uplift required to hit your chosen ROI goal.
 
-6. Share a scenario (new)
+6. Share a scenario
 - Click `Copy Share Link`.
 - Send the link to a teammate.
 - When they open it, the app loads your exact inputs and target ROI from URL parameters.
+
+7. Export a scenario report (new)
+- Click `Download CSV Report`.
+- Share the exported CSV with stakeholders for async review or meeting prep.
 
 ## How The Calculation Works
 

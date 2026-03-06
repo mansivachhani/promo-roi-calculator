@@ -58,6 +58,7 @@ export default function Home() {
   const [inputs, setInputs] = useState<Inputs>(presets[1].values);
   const [targetRoi, setTargetRoi] = useState<string>("25");
   const [shareCopied, setShareCopied] = useState<boolean>(false);
+  const [csvDownloaded, setCsvDownloaded] = useState<boolean>(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -175,6 +176,59 @@ export default function Home() {
     ...sensitivity.map((point) => Math.abs(point.roi))
   );
 
+  const downloadCsvReport = () => {
+    const rows = [
+      ["Metric", "Value"],
+      ["Baseline Revenue", String(results.baselineRevenue)],
+      ["Expected Uplift %", inputs.upliftPct],
+      ["Bonus Cost", inputs.bonusCost],
+      ["Churn Impact %", inputs.churnPct],
+      ["Target ROI %", targetRoi],
+      ["Uplift Revenue", results.upliftRevenue.toFixed(2)],
+      ["Churn Impact Amount", results.churnImpact.toFixed(2)],
+      ["Net Impact", results.netImpact.toFixed(2)],
+      ["ROI %", results.roi.toFixed(2)],
+      [
+        "Payback Months",
+        results.upliftRevenue + results.churnImpact > 0
+          ? results.payback.toFixed(2)
+          : "N/A"
+      ],
+      [
+        "Break-even Uplift %",
+        upliftTargets.breakEvenUplift === null
+          ? "N/A"
+          : upliftTargets.breakEvenUplift.toFixed(2)
+      ],
+      [
+        "Target Uplift %",
+        upliftTargets.targetUplift === null
+          ? "N/A"
+          : upliftTargets.targetUplift.toFixed(2)
+      ],
+      ["", ""],
+      ["Sensitivity Uplift", "Sensitivity ROI %"],
+      ...sensitivity.map((point) => [point.label, point.roi.toFixed(2)])
+    ];
+
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `promo-roi-report-${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    setCsvDownloaded(true);
+    window.setTimeout(() => setCsvDownloaded(false), 1800);
+  };
+
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-6 py-14">
       <header className="space-y-4">
@@ -271,11 +325,23 @@ export default function Home() {
             >
               Copy Share Link
             </button>
+            <button
+              type="button"
+              onClick={downloadCsvReport}
+              className="rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900 transition hover:border-emerald-400 hover:bg-emerald-100"
+            >
+              Download CSV Report
+            </button>
           </div>
         </div>
         {shareCopied && (
           <p className="mt-3 text-sm font-medium text-emerald-700">
             Share link copied.
+          </p>
+        )}
+        {csvDownloaded && (
+          <p className="mt-1 text-sm font-medium text-emerald-700">
+            CSV report downloaded.
           </p>
         )}
         <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
